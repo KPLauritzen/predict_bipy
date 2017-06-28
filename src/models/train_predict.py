@@ -66,9 +66,11 @@ def make_model_name(model_info):
     """Figure out an appropriate name for the model, 
     given either a path or a dict with parameters"""
     if isinstance(model_info, str):
-        # Split somehow
-        filename = os.path.basename(model_info)
+        # Get only filename (without path)
+        filename = os.path.basename(model_info) 
+        # Split at '__' and Cut the last bit (__best.hdf5)
         params = filename.split('__')[:-1]
+        # Paste back together with '__'
         modelname = '__'.join(params)
     else:
         # Generate from dict
