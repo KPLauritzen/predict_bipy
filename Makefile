@@ -101,6 +101,7 @@ train:
 ## Parse output from model training
 training_log:
 	$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/tun-mol --out_path models/tun-mol-performance.csv
+	$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/tun-mol-seed-2 --out_path models/tun-mol-seed-2-performance.csv
 	$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/step-G --out_path models/step-G-performance.csv
 #################################################################################
 # Self Documenting Commands                                                     #
