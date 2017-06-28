@@ -98,6 +98,7 @@ test_environment: test_environment.py
 train: 
 	$(PYTHON_INTERPRETER) src/models/train_predict.py --do_train --do_predict
 
+## Parse output from model training
 training_log:
 	$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/tun-mol --out_path models/tun-mol-performance.csv
 	$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/step-G --out_path models/step-G-performance.csv
