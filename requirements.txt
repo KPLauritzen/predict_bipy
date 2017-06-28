@@ -16,3 +16,4 @@ mlxtend
 pylint
 h5py
 tqdm
+tox

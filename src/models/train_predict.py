@@ -1,14 +1,14 @@
 from __future__ import print_function, division
 
-import numpy as np
-import pandas as pd
 import pickle
 import os
+import numpy as np
+import pandas as pd
 from sklearn.metrics import silhouette_score
+from sklearn.model_selection import train_test_split
 from keras.layers import LSTM, Input, Dense, GRU
 from keras.models import Sequential, load_model
 from keras.callbacks import ModelCheckpoint, CSVLogger, EarlyStopping, Callback
-from sklearn.model_selection import train_test_split
 from mlxtend.file_io import find_files
 
 import matplotlib
@@ -106,7 +106,6 @@ def train(model, kw_dict):
 def load_training_traces(kw_dict):
     """Find the folder where the labelled data lives. Split into "Molecule" or
     "Tunneling" (no molecule)"""
-    root_path = kw_dict['datadir']
     upper_cut = kw_dict['upper_cutoff']
     lower_cut = kw_dict['lower_cutoff']
 
@@ -128,7 +127,6 @@ def load_training_traces(kw_dict):
 
 def get_filenames_from_index(idxs, kw_dict):
     datadir = kw_dict['datadir']
-    data_basename = '17_03_31_BP_4K_'
     filenames = [os.path.join(datadir, '17_03_31_BP_4K_{}.dat'.format(ii)) for ii in idxs]
     return filenames
 
