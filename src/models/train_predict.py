@@ -238,7 +238,7 @@ def load_predict_traces(kw_dict):
     predict_idxs = predict_df.idx.values
     predict_files = get_filenames_from_index(predict_idxs, kw_dict)
     predict_traces = get_traces_from_filenames(predict_files)
-    predict_cut_traces, good_idxs = preprocess(predict_traces, upper_cutoff=upper_cut, lower_cut=lower_cut)
+    predict_cut_traces, good_idxs = preprocess(predict_traces, upper_cutoff=upper_cut, lower_cutoff=lower_cut)
     cut_idxs = predict_idxs[good_idxs]
 
     assert len(predict_cut_traces) == len(cut_idxs)
@@ -258,7 +258,7 @@ def write_predictions(predictions, idxs, kw_dict):
     """Write predictions to a .csv for later analysis"""
     df = pd.DataFrame()
     df['trace_idx'] = np.array(idxs, dtype=int)
-    df['p_molecule'] = predictions
+    df['pred'] = predictions
 
     path = kw_dict['basepath'] + '__predictions.csv' 
     df.to_csv(path, index=False)

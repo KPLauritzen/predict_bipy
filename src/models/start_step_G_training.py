@@ -28,7 +28,7 @@ else:
 
 for  nodes, extra_dense, recur_unit, upper_lower in itertools.product(*iterables):
     upper_cut, lower_cut = upper_lower
-    jobname = 'bipy_moltun__{}__{}nodes'.format(recur_unit, nodes)
-    submit_string = """python {submit_path} --scriptname={script_path} --partition kemi_gemma3 --no_scratch --mail fail --jobname {jobname} --jobid --py_args='--do_train --do_predict --n_nodes {nodes} --n_epochs 300 {extra_dense} --recurrent_unit {recur_unit} --upper_cutoff {upper_cut} --lower_cutoff {lower_cut} --datadir data/processed/all_traces --modeldir models/tun-mol --pos_idx_file data/processed/molecular_index.csv --neg_idx_file data/processed/tunnel_index.csv --predict_idx_file data/processed/all_index.csv --seed 1'""".format(**locals())
+    jobname = 'bipy_step_G__{}__{}nodes'.format(recur_unit, nodes)
+    submit_string = """python {submit_path} --scriptname={script_path} --partition kemi_gemma3 --no_scratch --mail fail --jobname {jobname} --jobid --py_args='--do_train --do_predict --n_nodes {nodes} --n_epochs 300 {extra_dense} --recurrent_unit {recur_unit} --upper_cutoff {upper_cut} --lower_cutoff {lower_cut} --datadir data/processed/all_traces --modeldir models/step-G --pos_idx_file data/processed/bipy_with_step_index.csv --neg_idx_file data/processed/bipy_without_step_index.csv --predict_idx_file data/processed/all_index.csv --seed 1'""".format(**locals())
     os.system(submit_string)
     os.system("sbatch submit.sl")
