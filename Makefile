@@ -1,4 +1,4 @@
-.PHONY: clean lint sync_data_to_s3 sync_data_from_s3
+.PHONY: clean lint sync_data_to_s3 sync_data_from_s3 sync_models_to_s3 sync_models_from_s3
 
 #################################################################################
 # GLOBALS                                                                       #
@@ -36,7 +36,7 @@ clean:
 lint:
 	flake8 --exclude=lib/,bin/,docs/conf.py .
 
-## Upload Data to S3
+## Upload `data/` to S3
 sync_data_to_s3:
 ifeq (default,$(PROFILE))
 	aws s3 sync data/ s3://$(BUCKET)/data/
@@ -44,12 +44,28 @@ else
 	aws s3 sync data/ s3://$(BUCKET)/data/ --profile $(PROFILE)
 endif
 
-## Download Data from S3
+## Download `data/` from S3
 sync_data_from_s3:
 ifeq (default,$(PROFILE))
 	aws s3 sync s3://$(BUCKET)/data/ data/
 else
 	aws s3 sync s3://$(BUCKET)/data/ data/ --profile $(PROFILE)
+endif
+
+## Upload `models/` to S3
+sync_models_to_s3:
+ifeq (default,$(PROFILE))
+	aws s3 sync models/ s3://$(BUCKET)/models/
+else
+	aws s3 sync models/ s3://$(BUCKET)/models/ --profile $(PROFILE)
+endif
+
+## Download `models/` from S3
+sync_models_from_s3:
+ifeq (default,$(PROFILE))
+	aws s3 sync s3://$(BUCKET)/models/ models/
+else
+	aws s3 sync s3://$(BUCKET)/models/ models/ --profile $(PROFILE)
 endif
 
 ## Set up python interpreter environment
@@ -80,13 +96,11 @@ test_environment: test_environment.py
 
 ## Train on molecule/tunneling with default neural network
 train: 
-	$(PYTHON_INTERPRETER) src/models/train_predict.py --do_train
+	$(PYTHON_INTERPRETER) src/models/train_predict.py --do_train --do_predict
 
-## Predict with best neural network. NB: Does not work
-predict: 
-	$(PYTHON_INTERPRETER) src/models/train_predict.py --do_predict
-
-
+training_log:
+	$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/tun-mol --out_path models/tun-mol-performance.csv
+	$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/step-G --out_path models/step-G-performance.csv
 #################################################################################
 # Self Documenting Commands                                                     #
 #################################################################################
