@@ -86,8 +86,8 @@ def train(model, kw_dict):
     n_epochs = kw_dict['n_epochs']
     traces, labels = load_training_traces(kw_dict)
     weights = get_class_weights(labels)
-    X_train, X_test, y_train, y_test = train_test_split(traces, labels, test_size=0.3, stratify=labels)
-    X_valid, X_holdout, y_valid, y_holdout = train_test_split(X_test, y_test, test_size=0.5, stratify=y_test)
+    X_train, X_test, y_train, y_test = train_test_split(traces, labels, test_size=0.3, stratify=labels, random_state=kw_dict['seed'])
+    X_valid, X_holdout, y_valid, y_holdout = train_test_split(X_test, y_test, test_size=0.5, stratify=y_test, random_state=kw_dict['seed'])
 
     training_gen = data_generator(X_train, y_train, n_classes=1)
     valid_gen = data_generator(X_valid, y_valid, n_classes=1)
@@ -129,15 +129,15 @@ def load_training_traces(kw_dict):
 
 def get_filenames_from_index(idxs, kw_dict):
     datadir = kw_dict['datadir']
-    filenames = [os.path.join(datadir, '17_03_31_BP_4K_{}.dat'.format(ii)) for ii in idxs]
+    datafile_basename = kw_dict['datafile_basename']
+    filenames = [os.path.join(datadir, datafile_basename.format(ii)) for ii in idxs]
     return filenames
 
-def get_traces_from_filenames(filenames):
-    read_rows = 4100
-    traces = np.zeros(shape=(len(filenames), read_rows))
+def get_traces_from_filenames(filenames, read_rows=4100):
+    traces = []
     for ii, f in enumerate(filenames):
-        df = pd.read_csv(f, skiprows=1, nrows=read_rows, names='G')
-        traces[ii] = df.G.values
+        df = pd.read_csv(f)
+        traces.append(df.G.values)
     return traces
 
 def get_class_weights(labels):
@@ -278,7 +278,8 @@ if __name__ == '__main__':
     parser.add_argument('--load_model', type=str, default=None)
     parser.add_argument('--upper_cutoff', type=float, default=1e-1)
     parser.add_argument('--lower_cutoff', type=float, default=1e-6)
-    parser.add_argument('--datadir', type=str, default='data/processed/all_traces')
+    parser.add_argument('--datadir', type=str, default='data/processed/4K_traces')
+    parser.add_argument('--datafile_basename', default='open_17_03_31_BP_4K_{}.dat', type=str)
     parser.add_argument('--modeldir', type=str, default='models/tun-mol')
     parser.add_argument('--verbose', type=int, default=1)
     parser.add_argument('--seed', type=int, default=None)

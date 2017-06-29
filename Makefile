@@ -25,8 +25,9 @@ requirements: requirements.txt
 	pip install -r requirements.txt
 
 ## Make Dataset
-data: requirements src/data/make_dataset.py
-	$(PYTHON_INTERPRETER) src/data/make_dataset.py
+data: requirements 
+	$(PYTHON_INTERPRETER) src/data/make_4K_dataset.py
+	$(PYTHON_INTERPRETER) src/data/make_300K_dataset.py
 
 ## Delete all compiled Python files
 clean:

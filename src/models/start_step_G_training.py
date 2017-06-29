@@ -12,7 +12,7 @@ script_path = os.path.abspath('src/models/train_predict.py')
 n_nodes = [4, 6, 8, 10]
 dense = ['--extra_dense', '']
 recurrent_units = ['lstm', 'gru']
-upper_lower_cutoffs = [(1e-1, 1e-7), (1e-1, 1e-6)]
+upper_lower_cutoffs = [(1e-1, 1e-6), (1.2, 1e-6)]
 seeds = [1, 2, 3]
 
 
@@ -30,6 +30,6 @@ else:
 for  nodes, extra_dense, recur_unit, upper_lower, seed in itertools.product(*iterables):
     upper_cut, lower_cut = upper_lower
     jobname = 'bipy_step_G__{}__{}nodes'.format(recur_unit, nodes)
-    submit_string = """python {submit_path} --scriptname={script_path} --partition kemi_gemma3 --no_scratch --mail fail --jobname {jobname} --jobid --py_args='--do_train --do_predict --n_nodes {nodes} --n_epochs 300 {extra_dense} --recurrent_unit {recur_unit} --upper_cutoff {upper_cut} --lower_cutoff {lower_cut} --datadir data/processed/all_traces --modeldir models/step-G-seed-{seed} --pos_idx_file data/processed/bipy_with_step_index.csv --neg_idx_file data/processed/bipy_without_step_index.csv --predict_idx_file data/processed/predicted_molecular_index.csv --seed {seed}'""".format(**locals())
+    submit_string = """python {submit_path} --scriptname={script_path} --partition kemi_gemma3 --no_scratch --mail fail --jobname {jobname} --jobid --py_args='--do_train --do_predict --n_nodes {nodes} --n_epochs 300 {extra_dense} --recurrent_unit {recur_unit} --upper_cutoff {upper_cut} --lower_cutoff {lower_cut} --datadir data/processed/4K_traces --modeldir models/step-G-seed-{seed} datafile_basename open_17_03_31_BP_4K_{}.dat --pos_idx_file data/processed/bipy_with_step_index.csv --neg_idx_file data/processed/bipy_without_step_index.csv --predict_idx_file data/processed/predicted_molecular_index.csv --seed {seed}'""".format(**locals())
     os.system(submit_string)
     os.system("sbatch submit.sl")
