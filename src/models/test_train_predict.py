@@ -1,6 +1,7 @@
 import pytest
 import src.models.train_predict as tp
-
+import pandas as pd
+import numpy as np
 def test_get_trace_idx_from_filename():
     # Simple test
     assert tp.get_trace_idx_from_filename('12_34_BP_4K_99.dat') == 99
@@ -22,3 +23,49 @@ def test_build_model():
     kw_dict['recurrent_unit'] = 'awesome_rnn'
     with pytest.raises(NotImplementedError):
         tp.build_model(kw_dict)
+
+
+def test_train(tmpdir):
+    pos_idx_file, neg_idx_file, datapath = make_artificial_data(tmpdir=tmpdir)
+    model = make_model()
+    kw_dict = {
+        'n_epochs' : 1,
+        'seed' : 1,
+        'upper_cutoff' : 1.0,
+        'lower_cutoff' : 0.1,
+        'pos_idx_file' : pos_idx_file,
+        'neg_idx_file' : neg_idx_file,
+        'datadir' : datapath,
+        'basepath' : datapath,
+        'verbose':0
+    }
+    tp.train(model, kw_dict)
+    tmpdir.remove()
+
+
+def make_artificial_data(tmpdir, basename='17_03_31_BP_4K_{}.dat'):
+    n_traces = 30
+    all_idx = range(n_traces)
+    pos_idx = all_idx[:n_traces/2]
+    pos_idx_file = tmpdir.join('pos_idx')
+    f = pos_idx_file.open('w')
+    pd.DataFrame({'idx':pos_idx}).to_csv(f)
+
+    neg_idx = all_idx[n_traces/2:]
+    neg_idx_file = tmpdir.join('neg_idx')
+    f = neg_idx_file.open('w')
+    pd.DataFrame({'idx':neg_idx}).to_csv(f)
+    for ii in all_idx:
+        datapath = tmpdir.join(basename.format(ii)).open('w')
+        pd.DataFrame({'G':np.random.random(4100)}).to_csv(datapath)
+    pos_path = '/' + pos_idx_file.relto('/')
+    pos_path = pos_idx_file.realpath()
+    neg_path = '/' + neg_idx_file.relto('/')
+    dirpath = '/' + tmpdir.relto('/')
+    return pos_path, neg_path, dirpath
+
+
+def make_model():
+    kw_dict = {'n_nodes':4, 'recurrent_unit':'LSTM', 'extra_dense':True}
+    model = tp.build_model(kw_dict)
+    return model
