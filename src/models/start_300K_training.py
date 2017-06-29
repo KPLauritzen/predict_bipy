@@ -29,7 +29,8 @@ else:
 
 for  nodes, extra_dense, recur_unit, upper_lower, seed in itertools.product(*iterables):
     upper_cut, lower_cut = upper_lower
+    basename = 'open_16_08_11_BP_{}.dat'
     jobname = 'bipy_300K__{}__{}nodes'.format(recur_unit, nodes)
-    submit_string = """python {submit_path} --scriptname={script_path} --partition kemi_gemma3 --no_scratch --mail fail --jobname {jobname} --jobid --py_args='--do_train --do_predict --n_nodes {nodes} --n_epochs 300 {extra_dense} --recurrent_unit {recur_unit} --upper_cutoff {upper_cut} --lower_cutoff {lower_cut} --datadir data/processed/300K_traces --modeldir models/300K-tun-mol-seed-{seed} --datafile_basename open_16_08_11_BP_{}.dat --pos_idx_file data/processed/300K_molecular_index.csv --neg_idx_file data/processed/300K_tunnel_index.csv --predict_idx_file data/processed/300K_all_index.csv --seed {seed}'""".format(**locals())
+    submit_string = """python {submit_path} --scriptname={script_path} --partition kemi_gemma3 --no_scratch --mail fail --jobname {jobname} --jobid --py_args='--do_train --do_predict --n_nodes {nodes} --n_epochs 300 {extra_dense} --recurrent_unit {recur_unit} --upper_cutoff {upper_cut} --lower_cutoff {lower_cut} --datadir data/processed/300K_traces --modeldir models/300K-tun-mol-seed-{seed} --datafile_basename {basename} --pos_idx_file data/processed/300K_molecular_index.csv --neg_idx_file data/processed/300K_tunnel_index.csv --predict_idx_file data/processed/300K_all_index.csv --seed {seed}'""".format(**locals())
     os.system(submit_string)
     os.system("sbatch submit.sl")
