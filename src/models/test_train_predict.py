@@ -25,8 +25,9 @@ def test_build_model():
         tp.build_model(kw_dict)
 
 
-def test_train(tmpdir):
-    pos_idx_file, neg_idx_file, datapath = make_artificial_data(tmpdir=tmpdir)
+def test_train_predict(tmpdir):
+    basename = 'testing{}.dat'
+    pos_idx_file, neg_idx_file, datapath = make_artificial_data(tmpdir=tmpdir, basename=basename)
     model = make_model()
     kw_dict = {
         'n_epochs' : 1,
@@ -35,11 +36,14 @@ def test_train(tmpdir):
         'lower_cutoff' : 0.1,
         'pos_idx_file' : pos_idx_file,
         'neg_idx_file' : neg_idx_file,
+        'predict_idx_file' : pos_idx_file,
         'datadir' : datapath,
         'basepath' : datapath,
-        'verbose':0
+        'verbose': 0,
+        'datafile_basename': basename,
     }
-    tp.train(model, kw_dict)
+    model, _ = tp.train(model, kw_dict)
+    tp.predict(model, kw_dict)
     tmpdir.remove()
 
 
@@ -57,7 +61,7 @@ def make_artificial_data(tmpdir, basename='17_03_31_BP_4K_{}.dat'):
     pd.DataFrame({'idx':neg_idx}).to_csv(f)
     for ii in all_idx:
         datapath = tmpdir.join(basename.format(ii)).open('w')
-        pd.DataFrame({'G':np.random.random(4100)}).to_csv(datapath)
+        pd.DataFrame({'G':np.random.random(100)}).to_csv(datapath)
     pos_path = '/' + pos_idx_file.relto('/')
     pos_path = pos_idx_file.realpath()
     neg_path = '/' + neg_idx_file.relto('/')
