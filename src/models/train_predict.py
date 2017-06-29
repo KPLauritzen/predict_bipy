@@ -179,17 +179,13 @@ def data_generator(traces, labels, n_classes=2):
 def get_callbacks(kw_dict):
     """Construct the callbacks used in training"""
     basepath = kw_dict['basepath']
-    model_chkpnt_filename = basepath + \
-        '__epoch_{epoch:02d}__val_loss_{val_loss:.3f}.hdf5'
     model_best_filename = basepath + '__best.hdf5'
-    checkpointer = ModelCheckpoint(
-        monitor='val_loss', filepath=model_chkpnt_filename, save_best_only=True, mode='min')
     save_best = ModelCheckpoint(
         monitor='val_loss', filepath=model_best_filename, save_best_only=True, mode='min')
     csvlogger = CSVLogger(filename=basepath +
                             '__training.log', append=False)
     early_stop = EarlyStopping(monitor='val_loss', patience=30)
-    callbacks = [checkpointer, csvlogger, early_stop, save_best]
+    callbacks = [csvlogger, early_stop, save_best]
     return callbacks
 
 

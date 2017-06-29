@@ -100,10 +100,14 @@ train:
 
 ## Parse output from model training
 training_log:
-	$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/tun-mol --out_path models/tun-mol-performance.csv
-	$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/tun-mol-seed-2 --out_path models/tun-mol-seed-2-performance.csv
-	$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/step-G --out_path models/step-G-performance.csv
-
+	for target in tun-mol step-G;
+	do 
+		for seed in seed-1 seed-2 seed-3;
+		do 
+			$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/${target}-${seed} --out_path models/${target}-${seed}-performance.csv
+		done;
+	done;
+	
 ## Make predictions from resonable network
 predict:
 	$(PYTHON_INTERPRETER) src/models/train_predict.py --do_predict --load_model models/tun-mol/recurrent_unit_gru__n_nodes_8__extra_dense_True__upper_cutoff_0.1__lower_cutoff_1e-07__best.hdf5 --upper_cutoff 0.1 --lower_cutoff 1e-7 --modeldir models/tun-mol --predict_idx_file data/processed/all_index.csv
