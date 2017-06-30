@@ -12,7 +12,7 @@ def main(modeldir, out_path):
 def get_results_from_training(path):
     files = find_files('training', path=path, recursive=False, check_ext='.log')
     assert len(files) > 0
-    header = ['network', 'n_nodes', 'extra_dense', 'upper_cutoff', 'lower_cutoff',  'basename', 'best_val_loss', 'best_val_acc', 'best_epoch', 'holdout_acc', 'holdout_loss']
+    header = ['network', 'n_nodes', 'extra_dense', 'upper_cutoff', 'lower_cutoff', 'smoothing', 'basename', 'best_val_loss', 'best_val_acc', 'best_epoch', 'holdout_acc', 'holdout_loss']
 
     result_dict = {el:list() for el in header}
     for logpath in tqdm(files):
