@@ -105,7 +105,7 @@ training_log:
 	do \ 
 		for seed in seed-1 seed-2 seed-3; \
 		do \
-			$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/${target}-${seed} --out_path models/${target}-${seed}-performance.csv \
+			$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/$${target}-$${seed} --out_path models/$${target}-$${seed}-performance.csv \
 		done; \
 	done;
 	
