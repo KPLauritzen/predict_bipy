@@ -25,8 +25,10 @@ def get_average_df(seeds, csv_basename, model_root, extra_params=None):
     desired_cols = ['best_val_acc', 'best_val_loss', 'holdout_acc', 'holdout_loss']
     for col in desired_cols:
         df_filter = df_combined.filter(regex=col)
-        ave = df_filter.mean(axis=1)
-        df_ave[col] = ave
+        mean = df_filter.mean(axis=1)
+        std = df_filter.std(axis=1)
+        df_ave[col] = mean
+        df_ave[col+'_std'] = std
 
     df_ave = sort_df(df_ave)
     return df_ave
@@ -41,8 +43,13 @@ def plot_ranked_performance(df, top=None, title=None):
     df = sort_df(df)
     if top is not None:
         df = df[df['rank'] < top]
-    df.plot(x='rank',y=[ 'holdout_loss', 'holdout_acc', 'best_val_acc', 'best_val_loss'])
+    #df.plot(x='rank',y= 'holdout_loss', yerr='holdout_loss_std')
+    ax = df.plot(x='rank',y= 'holdout_loss', yerr='holdout_loss_std', marker='o')
+    df.plot(x='rank',y= 'holdout_acc', yerr='holdout_acc_std', ax=ax, marker='o')
+    df.plot(x='rank', y=['best_val_acc', 'best_val_loss'], ax=ax)
     plt.ylim([0.0, 1.0])
+    xmin, xmax = plt.xlim()
+    plt.xlim([xmin-0.2, xmax+0.2])
     if title is not None:
         plt.title(title)
 
