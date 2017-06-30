@@ -74,7 +74,7 @@ def make_model_name(model_info):
         modelname = '__'.join(params)
     else:
         # Generate from dict
-        params = ['recurrent_unit', 'n_nodes', 'extra_dense', 'upper_cutoff', 'lower_cutoff']
+        params = ['recurrent_unit', 'n_nodes', 'extra_dense', 'upper_cutoff', 'lower_cutoff', 'smoothing']
         params_w_value = ['{}_{}'.format(x, model_info[x]) for x in params]
         modelname = '__'.join(params_w_value)
     return modelname
@@ -108,20 +108,18 @@ def train(model, kw_dict):
 def load_training_traces(kw_dict):
     """Find the folder where the labelled data lives. Split into "Molecule" or
     "Tunneling" (no molecule)"""
-    upper_cut = kw_dict['upper_cutoff']
-    lower_cut = kw_dict['lower_cutoff']
 
     pos_df = pd.read_csv(kw_dict['pos_idx_file'])
     pos_idxs = pos_df.idx.values
     pos_files = get_filenames_from_index(pos_idxs, kw_dict)
     pos_traces = get_traces_from_filenames(pos_files)
-    pos_cut_traces, _ = preprocess(pos_traces, upper_cutoff=upper_cut, lower_cutoff=lower_cut)
+    pos_cut_traces, _ = preprocess(pos_traces, kw_dict=kw_dict)
 
     neg_df = pd.read_csv(kw_dict['neg_idx_file'])
     neg_idxs = neg_df.idx.values
     neg_files = get_filenames_from_index(neg_idxs, kw_dict)
     neg_traces = get_traces_from_filenames(neg_files)
-    neg_cut_traces, _ = preprocess(neg_traces, upper_cutoff=upper_cut, lower_cutoff=lower_cut)
+    neg_cut_traces, _ = preprocess(neg_traces, kw_dict=kw_dict)
 
     # Reduce the size of the training data
     frac_data = kw_dict['fraction_training_data_used']
@@ -140,7 +138,7 @@ def get_filenames_from_index(idxs, kw_dict):
     filenames = [os.path.join(datadir, datafile_basename.format(ii)) for ii in idxs]
     return filenames
 
-def get_traces_from_filenames(filenames, read_rows=4100):
+def get_traces_from_filenames(filenames):
     traces = []
     for ii, f in enumerate(filenames):
         df = pd.read_csv(f)
@@ -154,16 +152,24 @@ def get_class_weights(labels):
     return weights
 
 
-def preprocess(traces, upper_cutoff, lower_cutoff):
+def preprocess(traces, kw_dict):
     """Cut each trace according to 2 cutoffs. Take the log"""
+    upper_cutoff = kw_dict['upper_cutoff']
+    lower_cutoff = kw_dict['lower_cutoff']
     processed = []
     good_idxs = []
     for ii, trace in enumerate(traces):
-        first_idx = np.where(trace < upper_cutoff)[0][0]
-        last_idx = np.where(trace < lower_cutoff)[0][0]
+        if kw_dict['smoothing']:
+            trace = moving_average(trace, kw_dict['smoothing'])
+        try:
+            first_idx = np.where(trace < upper_cutoff)[0][0]
+        except IndexError:
+            first_idx = -2
+        try:
+            last_idx = np.where(trace < lower_cutoff)[0][0]
+        except IndexError:
+            last_idx = -1
         cut_trace = trace[first_idx:last_idx]
-        # neg_idx = np.where(cut_trace < 0)[0]
-        # cut_trace[neg_idx] = lower_cutoff
         processed_trace = np.log(cut_trace)
         if len(processed_trace) == 0:
             continue
@@ -173,6 +179,10 @@ def preprocess(traces, upper_cutoff, lower_cutoff):
     assert len(processed) == len(good_idxs)
     return processed, good_idxs
 
+def moving_average(a, n) :
+    ret = np.cumsum(a, dtype=float)
+    ret[n:] = ret[n:] - ret[:-n]
+    return ret[n - 1:] / n
 
 def data_generator(traces, labels, n_classes=2):
     """Generator returning (trace, label)"""
@@ -233,15 +243,11 @@ def predict(model, kw_dict):
     return predictions, idxs
 
 def load_predict_traces(kw_dict):
-    root_path = kw_dict['datadir']
-    upper_cut = kw_dict['upper_cutoff']
-    lower_cut = kw_dict['lower_cutoff']
-
     predict_df = pd.read_csv(kw_dict['predict_idx_file'])
     predict_idxs = predict_df.idx.values
     predict_files = get_filenames_from_index(predict_idxs, kw_dict)
     predict_traces = get_traces_from_filenames(predict_files)
-    predict_cut_traces, good_idxs = preprocess(predict_traces, upper_cutoff=upper_cut, lower_cutoff=lower_cut)
+    predict_cut_traces, good_idxs = preprocess(predict_traces, kw_dict=kw_dict)
     cut_idxs = predict_idxs[good_idxs]
 
     assert len(predict_cut_traces) == len(cut_idxs)
@@ -295,6 +301,7 @@ if __name__ == '__main__':
     parser.add_argument('--neg_idx_file', type=str, default='data/processed/tunnel_index.csv')
     parser.add_argument('--predict_idx_file', type=str, default='data/processed/all_index.csv')
     parser.add_argument('--fraction_training_data_used', default=1.0, type=float)
+    parser.add_argument('--smoothing', default=None, type=int)
 
     args = parser.parse_args()
     kw_dict = vars(args)

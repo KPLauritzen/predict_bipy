@@ -41,7 +41,8 @@ def test_train_predict(tmpdir):
         'basepath' : datapath,
         'verbose': 0,
         'datafile_basename': basename,
-        'fraction_training_data_used': 1.0
+        'fraction_training_data_used': 1.0,
+        'smoothing': 10
     }
     model, _ = tp.train(model, kw_dict)
     tp.predict(model, kw_dict)
