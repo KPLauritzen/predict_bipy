@@ -32,17 +32,8 @@ def write_opening_closing(filename, outdir):
         for line in f:
             if line[0] == '#':
                 continue
-            if line[0] == 'X':
+            elif line[0] == 'X':
                 seen_params += 1
-                X0, dX = get_trace_params(line)
-                if seen_params == 1:
-                    params['open_X0'] = X0
-                    params['open_dX'] = dX
-                elif seen_params == 2:
-                    params['close_X0'] = X0
-                    params['close_dX'] = dX
-                else:
-                    raise ValueError
                 continue
             else:
                 value = float(line)
@@ -63,15 +54,3 @@ def write_opening_closing(filename, outdir):
     close_filename = os.path.join(outdir, 'close_' + basename)
     df = pd.DataFrame({'G':close_trace})
     df.to_csv(close_filename, index=False)
-
-    base, ext = os.path.splitext(basename)
-    path = os.path.join(outdir, base)
-    with open(path + '_params.pickle', 'w') as f:
-        pickle.dump(params, f)
-    return open_trace, close_trace
-
-def get_trace_params(line):
-    X0_part, dX_part = line.split(',')
-    X0 = X0_part.split(' ')[-2]
-    dX = dX_part.split(' ')[-2]
-    return float(X0), float(dX)
