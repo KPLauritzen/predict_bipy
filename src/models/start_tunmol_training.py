@@ -9,12 +9,12 @@ script_path = os.path.abspath('src/models/train_predict.py')
 
 
 
-n_nodes = [6, 10]
+n_nodes = [10, 16, 32]
 dense = ['--extra_dense', '']
 recurrent_units = ['lstm', 'gru']
 upper_lower_cutoffs = [(1e-1, 1e-7)]
 seeds = [1, 2, 3]
-training_used = np.linspace(0.1, 1.0, num=4)
+training_used = np.linspace(0.1, 1.0, num=10)
 
 iterables = (n_nodes, dense, recurrent_units, upper_lower_cutoffs, seeds, training_used)
 total_length = np.prod([len(x) for x in iterables])

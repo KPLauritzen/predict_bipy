@@ -155,8 +155,7 @@ def preprocess(traces, kw_dict):
     processed = []
     good_idxs = []
     for ii, trace in enumerate(traces):
-        if kw_dict['smoothing']:
-            trace = moving_average(trace, kw_dict['smoothing'])
+        trace = moving_average(trace, kw_dict['smoothing'])
         try:
             first_idx = np.where(trace < upper_cutoff)[0][0]
         except IndexError:
@@ -297,7 +296,7 @@ if __name__ == '__main__':
     parser.add_argument('--neg_idx_file', type=str, default='data/processed/tunnel_index.csv')
     parser.add_argument('--predict_idx_file', type=str, default='data/processed/all_index.csv')
     parser.add_argument('--fraction_training_data_used', default=1.0, type=float)
-    parser.add_argument('--smoothing', default=None, type=int)
+    parser.add_argument('--smoothing', default=1, type=int)
 
     args = parser.parse_args()
     kw_dict = vars(args)
