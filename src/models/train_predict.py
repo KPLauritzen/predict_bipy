@@ -123,6 +123,13 @@ def load_training_traces(kw_dict):
     neg_traces = get_traces_from_filenames(neg_files)
     neg_cut_traces, _ = preprocess(neg_traces, upper_cutoff=upper_cut, lower_cutoff=lower_cut)
 
+    # Reduce the size of the training data
+    frac_data = kw_dict['fraction_training_data_used']
+    if  frac_data != 1.0:
+        n_pos = int(frac_data * len(pos_cut_traces))
+        pos_cut_traces = list(np.random.choice(pos_cut_traces, size=n_pos, replace=False))
+        n_neg = int(frac_data * len(neg_cut_traces))
+        neg_cut_traces = list(np.random.choice(neg_cut_traces, size=n_neg, replace=False))
     training_traces = pos_cut_traces + neg_cut_traces
     labels = np.array([1] * len(pos_cut_traces) + [0] * len(neg_cut_traces))
     return training_traces, labels
@@ -287,6 +294,7 @@ if __name__ == '__main__':
     parser.add_argument('--pos_idx_file', type=str, default='data/processed/molecular_index.csv')
     parser.add_argument('--neg_idx_file', type=str, default='data/processed/tunnel_index.csv')
     parser.add_argument('--predict_idx_file', type=str, default='data/processed/all_index.csv')
+    parser.add_argument('--fraction_training_data_used', default=1.0, type=float)
 
     args = parser.parse_args()
     kw_dict = vars(args)
