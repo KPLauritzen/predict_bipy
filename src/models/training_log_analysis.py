@@ -34,7 +34,7 @@ def get_results_from_training(path):
         try:
             df_log = pd.read_csv(logpath)
         except IOError:
-            print("Can't read: " + logpath)
+            tqdm.write("Can't read: " + logpath)
             continue
         idx = find_best_epoch(df_log)
         best_val_loss, best_val_acc = df_log.loc[idx, ['val_loss', 'val_acc']]
@@ -53,7 +53,7 @@ def get_results_from_training(path):
             params.append(holdout_acc)
             params.append(holdout_loss)
         except:
-            print("Can't read evaluation performance")
+            tqdm.write("Can't read evaluation performance")
             continue
 
         for head, par in zip(header, params):
