@@ -34,10 +34,19 @@ def make_index_files(input_filepath, output_filepath, input_basename):
     tunnel_idxs = df['Tunnel'].values
     bp_idxs = df['BP present in Pull'].values
 
+    # Andras full classification
+    path = os.path.join(input_filepath, 'BP_300K_tunmol_full.csv')
+    df = pd.read_csv(path)
+    full_tunnel_idxs = df['Tunnel'].values
+    full_bp_idxs = df['BP present in Pull'].values
+
     # Write the index csv files
     utils.write_index_file(output_filepath, '300K_all', all_idxs)
     utils.write_index_file(output_filepath, '300K_tunnel', tunnel_idxs)
     utils.write_index_file(output_filepath, '300K_molecular', bp_idxs)
+
+    utils.write_index_file(output_filepath, '300K_tunnel_full', full_tunnel_idxs)
+    utils.write_index_file(output_filepath, '300K_molecular_full', full_bp_idxs)
 
 
 def copy_all_data(input_filepath, output_filepath):
