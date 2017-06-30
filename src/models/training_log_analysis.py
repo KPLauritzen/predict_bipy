@@ -5,13 +5,27 @@ import os
 from tqdm import tqdm
 
 
-def main(modeldir, out_path):
-    results_dict = get_results_from_training(modeldir)
-    write_performance(results_dict, out_path)
+def main(modeldir):
+    contents = os.listdir(modeldir) # ls modeldir
+    paths = [os.path.join(modeldir, el) for el in contents] # modeldir/el
+    dirs = [el for el in paths if os.path.isdir(el)] # only if modeldir/el is a dir
+
+    for subdir in dirs:
+        dirname = os.path.basename(subdir)
+        csvpath = os.path.join(modeldir, dirname + '-performance.csv')
+        print("Looking at " + subdir)
+        results_dict = get_results_from_training(subdir)
+        if results_dict is None:
+            print("No records found")
+            continue
+        print("writing to " + csvpath)
+        write_performance(results_dict, csvpath)
 
 def get_results_from_training(path):
+
     files = find_files('training', path=path, recursive=False, check_ext='.log')
-    assert len(files) > 0
+    if len(files) > 0:
+        return None
     header = ['network', 'n_nodes', 'extra_dense', 'upper_cutoff', 'lower_cutoff', 'smoothing', 'basename', 'best_val_loss', 'best_val_acc', 'best_epoch', 'holdout_acc', 'holdout_loss']
 
     result_dict = {el:list() for el in header}
@@ -71,8 +85,7 @@ def write_performance(results_dict, out_path):
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--modeldir')
-    parser.add_argument('--out_path')
+    parser.add_argument('--modeldir', default='models/')
     args = parser.parse_args()
 
-    main(args.modeldir, args.out_path)
+    main(args.modeldir)
