@@ -101,7 +101,7 @@ train:
 
 ## Parse output from model training
 training_log:
-	for target in tun-mol step-G, 300K-tun-mol;
+	for target in tun-mol step-G 300K-tun-mol;
 	do 
 		for seed in seed-1 seed-2 seed-3;
 		do 
