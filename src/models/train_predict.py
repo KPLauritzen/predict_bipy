@@ -86,7 +86,11 @@ def train(model, kw_dict):
     n_epochs = kw_dict['n_epochs']
     traces, labels = load_training_traces(kw_dict)
     weights = get_class_weights(labels)
-    X_train, X_test, y_train, y_test = train_test_split(traces, labels, test_size=0.3, stratify=labels, random_state=kw_dict['seed'])
+    frac_train = kw_dict['fraction_training_data_used']
+    assert frac_train > 0
+    assert frac_train <= 1.0
+    test_size = 1.0 - 0.7 * frac_train
+    X_train, X_test, y_train, y_test = train_test_split(traces, labels, test_size=test_size, stratify=labels, random_state=kw_dict['seed'])
     X_valid, X_holdout, y_valid, y_holdout = train_test_split(X_test, y_test, test_size=0.5, stratify=y_test, random_state=kw_dict['seed'])
 
     if kw_dict['fraction_training_data_used'] < 1.0:
