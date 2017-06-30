@@ -4,7 +4,7 @@ import numpy as np
 
 def get_average_df(seeds, csv_basename, model_root, extra_params=None):
     if extra_params is None:
-        extra_params = ['extra_dense', 'lower_cutoff', 'upper_cutoff', 'n_nodes', 'network' ]
+        extra_params = ['extra_dense', 'lower_cutoff', 'upper_cutoff', 'n_nodes', 'network', 'smoothing']
     # Load csvs
     dfs = []
     for seed in seeds:
@@ -17,7 +17,7 @@ def get_average_df(seeds, csv_basename, model_root, extra_params=None):
     # Make a clean df to merge in
     df_combined = df_orig[['basename']].copy()
     for df in dfs:
-        assert len(df) == len(df_combined)
+        #assert len(df) == len(df_combined)
         df_combined = pd.merge(df_combined, df, on='basename')
 
     # Make a clean df to get the average
@@ -37,11 +37,15 @@ def sort_df(df, by='holdout_loss', rank=True):
         df['rank'] = range(len(df))
     return df
 
-def plot_ranked_performance(df, top=None):
+def plot_ranked_performance(df, top=None, title=None):
     df = sort_df(df)
     if top is not None:
         df = df[df['rank'] < top]
-    df.plot(x='rank',y=['holdout_acc', 'holdout_loss', 'best_val_acc', 'best_val_loss'])
+    df.plot(x='rank',y=[ 'holdout_loss', 'holdout_acc', 'best_val_acc', 'best_val_loss'])
+    plt.ylim([0.0, 1.0])
+    if title is not None:
+        plt.title(title)
+
 
 def plot_trace(idx, datafile_basename, datadir):
     upper_cutoff = 2
