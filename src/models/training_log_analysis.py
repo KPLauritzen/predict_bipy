@@ -23,7 +23,7 @@ def main(modeldir):
 
 def get_results_from_training(path):
 
-    files = find_files('training', path=path, recursive=False, check_ext='.log')
+    files = find_files('training', path=path, recursive=True, check_ext='.log')
     if len(files) > 0:
         return None
     header = ['network', 'n_nodes', 'extra_dense', 'upper_cutoff', 'lower_cutoff', 'smoothing', 'basename', 'best_val_loss', 'best_val_acc', 'best_epoch', 'holdout_acc', 'holdout_loss']
