@@ -101,16 +101,7 @@ train:
 
 ## Parse output from model training
 training_log:
-	for target in tun-mol step-G 300K-tun-mol ; \
-	do for seed in seed-1 seed-2 seed-3 ; \
-		do $(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/$${target}-$${seed} --out_path models/$${target}-$${seed}-performance.csv ; \
-		done; \
-	done;
-
-## Parse output, only 300K traces
-training_log_300K:
-	for seed in seed-1 seed-2 seed-3; do for frac in 0.1 0.4 0.7 1.0; do $(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/300K-tun-mol-${seed}-frac-train-${frac}/ --out_path models/300K-tun-mol-${seed}-frac-train-${frac}-performance.csv;  done; done;	
-
+	do $(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/
 
 ## Make training targets from best predictions
 predict_index:
