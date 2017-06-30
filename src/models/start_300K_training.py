@@ -12,7 +12,7 @@ script_path = os.path.abspath('src/models/train_predict.py')
 n_nodes = [6, 8, 10]
 dense = ['--extra_dense', '']
 recurrent_units = ['lstm']
-upper_lower_cutoffs = [(1e-1, 1e-7), (1e-1, 1e-6)]
+upper_lower_cutoffs = [(1e-1, 1e-6), (2.0, 1e-6)]
 seeds = [1, 2, 3]
 #training_used = np.linspace(0.1, 1.0, num=4)
 training_used = [1.0]

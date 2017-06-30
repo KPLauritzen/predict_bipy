@@ -37,8 +37,8 @@ def make_index_files(input_filepath, output_filepath, input_basename):
     # Andras full classification
     path = os.path.join(input_filepath, 'BP_300K_tunmol_full.csv')
     df = pd.read_csv(path)
-    full_tunnel_idxs = df['Tunnel'].values
-    full_bp_idxs = df['BP present in Pull'].values
+    full_tunnel_idxs = df['Tunneling traces'].values
+    full_bp_idxs = df['BP traces'].values
 
     # Write the index csv files
     utils.write_index_file(output_filepath, '300K_all', all_idxs)
