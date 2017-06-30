@@ -101,10 +101,12 @@ train:
 
 ## Parse output from model training
 training_log:
-	for target in tun-mol step-G 300K-tun-mol;
-	do for seed in seed-1 seed-2 seed-3;
-		do $(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/${target}-${seed} --out_path models/${target}-${seed}-performance.csv
-		done;
+	for target in tun-mol step-G 300K-tun-mol ; \
+	do \ 
+		for seed in seed-1 seed-2 seed-3; \
+		do \
+			$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/${target}-${seed} --out_path models/${target}-${seed}-performance.csv \
+		done; \
 	done;
 	
 ## Make predictions from resonable network
