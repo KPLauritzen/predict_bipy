@@ -106,10 +106,11 @@ training_log:
 		do $(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/$${target}-$${seed} --out_path models/$${target}-$${seed}-performance.csv ; \
 		done; \
 	done;
-	
-## Make predictions from resonable network
-predict:
-	$(PYTHON_INTERPRETER) src/models/train_predict.py --do_predict --load_model models/tun-mol/recurrent_unit_gru__n_nodes_8__extra_dense_True__upper_cutoff_0.1__lower_cutoff_1e-07__best.hdf5 --upper_cutoff 0.1 --lower_cutoff 1e-7 --modeldir models/tun-mol --predict_idx_file data/processed/all_index.csv
+
+## Parse output, only 300K traces
+training_log_300K:
+	for seed in seed-1 seed-2 seed-3; do for frac in 0.1 0.4 0.7 1.0; do $(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/300K-tun-mol-${seed}-frac-train-${frac}/ --out_path models/300K-tun-mol-${seed}-frac-train-${frac}-performance.csv;  done; done;	
+
 
 ## Make training targets from best predictions
 predict_index:
