@@ -101,7 +101,7 @@ train:
 
 ## Parse output from model training
 training_log:
-	do $(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/
+	$(PYTHON_INTERPRETER) src/models/training_log_analysis.py --modeldir models/
 
 ## Make training targets from best predictions
 predict_index:
