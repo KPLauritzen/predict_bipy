@@ -15,7 +15,7 @@ def test_make_model_name():
     assert tp.make_model_name('/long/path/before/good__network__best.hdf5') == 'good__network'
 
 def test_build_model():
-    kw_dict = {'n_nodes':4, 'recurrent_unit':'LSTM', 'extra_dense':True}
+    kw_dict = {'n_nodes':4, 'recurrent_unit':'LSTM', 'extra_dense':True, 'dropout': 0.1, 'recurrent_dropout': 0.5}
 
     model = tp.build_model(kw_dict)
     assert isinstance(model, tp.Sequential)
@@ -23,12 +23,12 @@ def test_build_model():
     kw_dict['recurrent_unit'] = 'awesome_rnn'
     with pytest.raises(NotImplementedError):
         tp.build_model(kw_dict)
-
+    return model
 
 def test_train_predict(tmpdir):
     basename = 'testing{}.dat'
     pos_idx_file, neg_idx_file, datapath = make_artificial_data(tmpdir=tmpdir, basename=basename)
-    model = make_model()
+    model = test_build_model()
     kw_dict = {
         'n_epochs' : 1,
         'seed' : 1,
@@ -70,8 +70,3 @@ def make_artificial_data(tmpdir, basename='17_03_31_BP_4K_{}.dat'):
     dirpath = '/' + tmpdir.relto('/')
     return pos_path, neg_path, dirpath
 
-
-def make_model():
-    kw_dict = {'n_nodes':4, 'recurrent_unit':'LSTM', 'extra_dense':True}
-    model = tp.build_model(kw_dict)
-    return model

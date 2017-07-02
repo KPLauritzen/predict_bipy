@@ -45,6 +45,8 @@ def main(do_train, do_predict, model_str, kw_dict):
 def build_model(kw_dict):
     """Build a neural network according to the specifications in `kw_dict`"""
     n_nodes = kw_dict['n_nodes']
+    dropout = kw_dict['dropout']
+    recurrent_dropout = kw_dict['recurrent_dropout']
     if kw_dict['recurrent_unit'].lower() == 'gru':
         re_unit = GRU
     elif kw_dict['recurrent_unit'].lower() == 'lstm':
@@ -53,7 +55,9 @@ def build_model(kw_dict):
         raise NotImplementedError
 
     model = Sequential()
-    model.add(re_unit(units=n_nodes, input_shape=(None, 1)))
+    model.add(re_unit(units=n_nodes, input_shape=(None, 1), 
+        recurrent_dropout=recurrent_dropout, 
+        dropout=dropout))
     if kw_dict['extra_dense']:
         model.add(Dense(units=n_nodes//2))
     model.add(Dense(units=1, activation='sigmoid'))
@@ -74,7 +78,7 @@ def make_model_name(model_info):
         modelname = '__'.join(params)
     else:
         # Generate from dict
-        params = ['recurrent_unit', 'n_nodes', 'extra_dense', 'upper_cutoff', 'lower_cutoff', 'smoothing']
+        params = ['recurrent_unit', 'n_nodes', 'extra_dense', 'upper_cutoff', 'lower_cutoff', 'smoothing', 'dropout', 'recurrent_dropout']
         params_w_value = ['{}_{}'.format(x, model_info[x]) for x in params]
         modelname = '__'.join(params_w_value)
     return modelname
@@ -301,6 +305,8 @@ if __name__ == '__main__':
     parser.add_argument('--predict_idx_file', type=str, default='data/processed/all_index.csv')
     parser.add_argument('--fraction_training_data_used', default=1.0, type=float)
     parser.add_argument('--smoothing', default=1, type=int)
+    parser.add_argument('--dropout', type=float, default=0.0)
+    parser.add_argument('--recurrent_dropout', type=float, default=0.0)
 
     args = parser.parse_args()
     kw_dict = vars(args)
