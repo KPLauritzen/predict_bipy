@@ -1,3 +1,5 @@
+"""Load some results from training the RNN, and report performance.
+Run this when training is done"""
 from __future__ import print_function
 import pandas as pd
 from mlxtend.file_io import find_files

@@ -2,11 +2,25 @@ predict_bipy
 ==============================
 
 Using recurrent neural networks to classify conductance traces.
+Code repository for the "molecular trace detection" part of the paper
+"Classification of conductance traces with recurrent neural networks" by Kasper
+Lauritzen, András Magyarkuti, Zoltán Balogh, András Halbritter, and Gemma C.
+Solomon (Accepted JCP 2018) 
 
+Usage
+-----
 First, raw conductance traces should be places in `data/external` folder.
 - 4K traces are places in folders (BP_FlipsOut/ BP_Stays/ Tunnel/ UnSorted/)
 - 300K traces are placed in (BP_300K/)
 
+Then the data is processed with `src/data/make_4K_dataset.py`.
+This will be the input to the neural network. 
+
+The network is trained with `src/models/train_predict.py`
+This script also outputs the predicted probabilities from the RNN
+
+The performance of the network is evaulated with Jupyter notebooks and also
+`src/models/training_log_analysis.py`.
 
 
 Project Organization
