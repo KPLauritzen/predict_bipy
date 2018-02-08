@@ -14,7 +14,7 @@ parser.add_argument('--input_basename', type=str, default='17_03_31_BP_4K_')
 
 
 def main(input_filepath, output_filepath, input_basename):
-    """ Runs data processing scripts to turn raw data from (../raw) into
+    """ Runs data processing scripts to turn raw data from (../external) into
         cleaned data ready to be analyzed (saved in ../processed).
     """
     logger = logging.getLogger(__name__)
@@ -25,6 +25,8 @@ def main(input_filepath, output_filepath, input_basename):
 
 
 def make_index_files(input_filepath, output_filepath, input_basename):
+    """Get trace indices from the raw trace files in a subfolder. Save the
+    index files in ../processed"""
     tunnel_idxs = utils.get_index_in_folder(input_filepath, input_basename, 'Tunnel')
     bipy_stays_idxs = utils.get_index_in_folder(input_filepath, input_basename, 'BP_Stays')
     bipy_flips_idxs = utils.get_index_in_folder(input_filepath, input_basename, 'BP_FlipsOut')
@@ -49,6 +51,7 @@ def make_index_files(input_filepath, output_filepath, input_basename):
 
 
 def copy_all_data(input_filepath, output_filepath):
+    """Copy data from from external folder to processed folder"""
     dirs = ['Tunnel', 'BP_FlipsOut', 'BP_Stays', 'UnSorted']
     outdir = os.path.join(output_filepath, '4K_traces')
     if not os.path.exists(outdir):

@@ -2,7 +2,11 @@ import os
 import pandas as pd
 import pickle
 from mlxtend.file_io import find_files
+
+
 def get_index_in_folder(input_filepath, input_basename, folder):
+    """Loop through all .dat files in a folder, calling
+    `get_index_from_filename` on each file"""
     path = os.path.join(input_filepath, folder)
     files = find_files(input_basename, path=path, check_ext='.dat')
     idxs = []
@@ -12,6 +16,9 @@ def get_index_in_folder(input_filepath, input_basename, folder):
 
 
 def get_index_from_filename(full_path):
+    """Get index from trace files based on their filename.
+    Eg: <some path>/16_08_11_BP_6869.dat. 
+    Index would then be 6869"""
     filename = os.path.basename(full_path)
     idx_and_ext = filename.split('_')[-1]
     idx = idx_and_ext.split('.')[0]
@@ -24,6 +31,8 @@ def write_index_file(output_filepath, index_name, idxs):
     df.to_csv(out_path, index=False)
 
 def write_opening_closing(filename, outdir):
+    """Translate the raw trace files (.dat) to (.csv) for easy handling
+    later"""
     with open(filename, 'r') as f:
         seen_params = 0
         open_trace = []

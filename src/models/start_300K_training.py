@@ -1,4 +1,6 @@
-"""This starts many SLURM jobs on steno, training a neural network with some set of parameters"""
+"""This starts many SLURM jobs on steno, training a neural network with some
+set of parameters.
+This is very specific for Kaspers setup"""
 
 import os
 import itertools

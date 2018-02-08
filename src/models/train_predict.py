@@ -93,10 +93,14 @@ def train(model, kw_dict):
     frac_train = kw_dict['fraction_training_data_used']
     assert frac_train > 0
     assert frac_train <= 1.0
+    # Use at least 30% of all data for testing
     test_size = 1.0 - 0.7 * frac_train
+    # Split data into training and the rest
     X_train, X_test, y_train, y_test = train_test_split(traces, labels, test_size=test_size, stratify=labels, random_state=kw_dict['seed'])
+    # split remaining data into validation and holdout
     X_valid, X_holdout, y_valid, y_holdout = train_test_split(X_test, y_test, test_size=0.5, stratify=y_test, random_state=kw_dict['seed'])
 
+    # This should always be true. Not sure what is going on here. 
     if kw_dict['fraction_training_data_used'] < 1.0:
         X_train, _, y_train, _ = train_test_split(X_train, y_train, test_size=1.0 - kw_dict['fraction_training_data_used'], stratify=y_train, random_state=kw_dict['seed'])
 
@@ -110,6 +114,7 @@ def train(model, kw_dict):
     model = load_best_training_model(kw_dict)
 
     losses_holdout = model.evaluate_generator(holdout_gen, steps=len(X_holdout))
+    # Compute performance on holdout data and save to a file
     df_holdout = pd.DataFrame()
     df_holdout['holdout_loss'] = [losses_holdout[0]]
     df_holdout['holdout_acc'] = [losses_holdout[1]]
@@ -137,12 +142,15 @@ def load_training_traces(kw_dict):
     return training_traces, labels
 
 def get_filenames_from_index(idxs, kw_dict):
+    """Generate filenames for the trace files from list of indexes"""
     datadir = kw_dict['datadir']
     datafile_basename = kw_dict['datafile_basename']
     filenames = [os.path.join(datadir, datafile_basename.format(ii)) for ii in idxs]
     return filenames
 
 def get_traces_from_filenames(filenames):
+    """From filenames, read csv files of traces and add the conductance values
+    to a list"""
     traces = []
     for ii, f in enumerate(filenames):
         df = pd.read_csv(f)
