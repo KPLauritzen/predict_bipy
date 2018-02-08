@@ -4,7 +4,7 @@ import numpy as np
 
 def get_average_df(seeds, csv_basename, model_root, extra_params=None):
     if extra_params is None:
-        extra_params = ['extra_dense', 'lower_cutoff', 'upper_cutoff', 'n_nodes', 'network', 'smoothing']
+        extra_params = ['extra_dense', 'lower_cutoff', 'upper_cutoff', 'n_nodes', 'network', 'smoothing', 'dropout']
     # Load csvs
     dfs = []
     for seed in seeds:
@@ -46,7 +46,7 @@ def plot_ranked_performance(df, top=None, title=None):
     #df.plot(x='rank',y= 'holdout_loss', yerr='holdout_loss_std')
     ax = df.plot(x='rank',y= 'holdout_loss', yerr='holdout_loss_std', marker='o')
     df.plot(x='rank',y= 'holdout_acc', yerr='holdout_acc_std', ax=ax, marker='o')
-    df.plot(x='rank', y=['best_val_acc', 'best_val_loss'], ax=ax)
+    #df.plot(x='rank', y=['best_val_acc', 'best_val_loss'], ax=ax)
     plt.ylim([0.0, 1.0])
     xmin, xmax = plt.xlim()
     plt.xlim([xmin-0.2, xmax+0.2])
